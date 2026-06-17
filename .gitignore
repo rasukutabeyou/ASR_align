@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.venvs/
+models/
+data/work/
+data/out/
+data/raw/
