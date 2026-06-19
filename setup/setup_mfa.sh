@@ -21,7 +21,27 @@ EOF
     exit 1
 fi
 
-conda create -y -n mfa -c conda-forge montreal-forced-aligner
+# MFA 本体 + 日本語テキスト正規化に必要な spacy / sudachi トークナイザ。
+# (これが無いと align 時に「Please install Japanese support」で失敗する)
+conda create -y -n mfa -c conda-forge \
+    montreal-forced-aligner spacy sudachipy sudachidict-core
 # 後処理用(同 env に pip)
 conda run -n mfa pip install fugashi unidic-lite praatio soundfile scipy numpy
+
+# 日本語の事前学習モデル/辞書を直接DL(models/mfa へ)。
+# `mfa model download` は GitHub API(60req/h)律速で失敗しやすいため、
+# リリースアセットを直リンクで取得し、03_align_mfa.sh から直接参照する。
+MFA_MODEL_DIR="$PROJ_ROOT/models/mfa"
+mkdir -p "$MFA_MODEL_DIR"
+MFA_REL=https://github.com/MontrealCorpusTools/mfa-models/releases/download
+if [ ! -f "$MFA_MODEL_DIR/japanese_mfa_acoustic.zip" ]; then
+    curl -sL -o "$MFA_MODEL_DIR/japanese_mfa_acoustic.zip" \
+        "$MFA_REL/acoustic-japanese_mfa-v3.0.0/japanese_mfa.zip"
+fi
+if [ ! -f "$MFA_MODEL_DIR/japanese_mfa.dict" ]; then
+    curl -sL -o "$MFA_MODEL_DIR/japanese_mfa.dict" \
+        "$MFA_REL/dictionary-japanese_mfa-v3.0.0/japanese_mfa.dict"
+fi
+
 echo "[setup] mfa env (conda) 作成完了。 'conda activate mfa' で利用。"
+echo "[setup] mfa model -> $MFA_MODEL_DIR (japanese_mfa acoustic/dict)"

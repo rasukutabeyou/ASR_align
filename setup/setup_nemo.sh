@@ -5,14 +5,12 @@ source "$(dirname "$0")/../config.sh"
 
 TORCH_INDEX="${TORCH_INDEX:-https://download.pytorch.org/whl/cu121}"
 
-python3 -m venv "$VENV_DIR/nemo"
-source "$VENV_DIR/nemo/bin/activate"
-pip install -U pip wheel
-pip install torch torchaudio --index-url "$TORCH_INDEX"
-pip install "nemo_toolkit[asr]"
+uv venv --clear --python 3.11 "$VENV_DIR/nemo"
+PY="$VENV_DIR/nemo/bin/python"
+uv pip install --python "$PY" torch torchaudio --index-url "$TORCH_INDEX"
+uv pip install --python "$PY" "nemo_toolkit[asr]"
 # ReazonSpeech の NeMo インターフェース
-pip install Cython
-pip install "reazonspeech-nemo-asr @ git+https://github.com/reazon-research/ReazonSpeech#subdirectory=pkg/nemo-asr"
-pip install soundfile scipy numpy
-deactivate
+uv pip install --python "$PY" Cython
+uv pip install --python "$PY" "reazonspeech-nemo-asr @ git+https://github.com/reazon-research/ReazonSpeech#subdirectory=pkg/nemo-asr"
+uv pip install --python "$PY" soundfile scipy numpy
 echo "[setup] nemo env -> $VENV_DIR/nemo"

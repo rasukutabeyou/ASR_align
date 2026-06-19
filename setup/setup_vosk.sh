@@ -3,11 +3,8 @@
 set -euo pipefail
 source "$(dirname "$0")/../config.sh"
 
-python3 -m venv "$VENV_DIR/vosk"
-source "$VENV_DIR/vosk/bin/activate"
-pip install -U pip wheel
-pip install vosk soundfile scipy numpy
-deactivate
+uv venv --clear --python 3.11 "$VENV_DIR/vosk"
+uv pip install --python "$VENV_DIR/vosk/bin/python" vosk soundfile scipy numpy
 
 # 日本語モデル(大: 高精度 ~1GB)。小型は vosk-model-small-ja-0.22。
 MODEL_DIR="$PROJ_ROOT/models"

@@ -5,11 +5,9 @@ source "$(dirname "$0")/../config.sh"
 
 TORCH_INDEX="${TORCH_INDEX:-https://download.pytorch.org/whl/cu121}"
 
-python3 -m venv "$VENV_DIR/mms"
-source "$VENV_DIR/mms/bin/activate"
-pip install -U pip wheel
-pip install torch torchaudio --index-url "$TORCH_INDEX"
-pip install uroman fugashi unidic-lite
-pip install soundfile scipy numpy
-deactivate
+uv venv --clear --python 3.11 "$VENV_DIR/mms"
+PY="$VENV_DIR/mms/bin/python"
+uv pip install --python "$PY" torch torchaudio --index-url "$TORCH_INDEX"
+uv pip install --python "$PY" uroman fugashi unidic-lite
+uv pip install --python "$PY" soundfile scipy numpy
 echo "[setup] mms env -> $VENV_DIR/mms"

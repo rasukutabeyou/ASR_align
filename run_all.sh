@@ -39,8 +39,11 @@ for CH in $CHANNELS; do
             py whisperx "$SC/02_align_whisperx.py" --wav "$WAV" --segments "$SEG" \
                 --out "$OUT" --channel "$CH" --language "$LANG_CODE" ;;
         mms)
+            # MMS_FA は 21分音声を一括 forward すると GPU OOM(24GBでも不足)に
+            # なるため既定で CPU 実行。GPUで試す場合は MMS_DEVICE=cuda。
             py mms "$SC/04_align_mms.py" --wav "$WAV" --transcript "$TXT" \
-                --out "$OUT" --channel "$CH" --language "$LANG_CODE" ;;
+                --out "$OUT" --channel "$CH" --language "$LANG_CODE" \
+                --device "${MMS_DEVICE:-cpu}" ;;
         vosk)
             py vosk "$SC/05_recognize_vosk.py" --wav "$WAV" --model "$VOSK_MODEL" \
                 --out "$OUT" --channel "$CH" --language "$LANG_CODE" ;;

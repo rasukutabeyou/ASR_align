@@ -8,11 +8,9 @@ source "$(dirname "$0")/../config.sh"
 #   例) export TORCH_INDEX=https://download.pytorch.org/whl/cu128
 TORCH_INDEX="${TORCH_INDEX:-https://download.pytorch.org/whl/cu121}"
 
-python3 -m venv "$VENV_DIR/whisperx"
-source "$VENV_DIR/whisperx/bin/activate"
-pip install -U pip wheel
-pip install torch torchaudio --index-url "$TORCH_INDEX"
-pip install whisperx faster-whisper
-pip install soundfile scipy numpy
-deactivate
+uv venv --clear --python 3.11 "$VENV_DIR/whisperx"
+PY="$VENV_DIR/whisperx/bin/python"
+uv pip install --python "$PY" torch torchaudio --index-url "$TORCH_INDEX"
+uv pip install --python "$PY" whisperx faster-whisper
+uv pip install --python "$PY" soundfile scipy numpy
 echo "[setup] whisperx env -> $VENV_DIR/whisperx"
